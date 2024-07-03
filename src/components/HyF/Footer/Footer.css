@@ -1,0 +1,59 @@
+.footer {
+    background-color: #5F6F52;
+    color: #FEFAE0;
+    padding: 1rem;
+    text-align: center;
+    font-family: 'Lato', sans-serif;
+    position: relative;
+    width: 100%;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.contact-info {
+    text-align: left;
+    margin-left: 0; /* Eliminar margen izquierdo */
+}
+
+.contact-info a {
+    color: #1a73e8; /* Cambiar color a azul como un link */
+    text-decoration: none;
+}
+
+.contact-info a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    text-align: center;
+    flex: 1;
+}
+
+.affiliates {
+    text-align: right;
+    margin-right: 0; /* Eliminar margen derecho */
+}
+
+.affiliates ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.affiliates li {
+    margin: 0.5rem 0;
+}
+
+
+
+
