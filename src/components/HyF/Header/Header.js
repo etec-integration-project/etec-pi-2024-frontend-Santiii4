@@ -1,7 +1,7 @@
 import React from 'react';
 import './Header.css';
 import { Link } from 'react-router-dom';
-import logo from '../../../assets/Logo.png'; // Nueva ruta al logo
+import logo from '../../../assets/Logo.png';
 
 const Header = () => {
     return (
@@ -23,6 +23,7 @@ const Header = () => {
 };
 
 export default Header;
+
 
 
 

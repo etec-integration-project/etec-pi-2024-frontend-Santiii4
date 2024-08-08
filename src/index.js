@@ -8,13 +8,14 @@ ReactDOM.render(
     <React.StrictMode>
         <Router>
             <Routes>
-                <Route path="*" element={<Navigate to="/home" />} />
+                <Route path="/*" element={<App />} />
+                <Route path="/" element={<Navigate to="/home" />} />
             </Routes>
-            <App />
         </Router>
     </React.StrictMode>,
     document.getElementById('root')
 );
+
 
 
 
