@@ -4,6 +4,7 @@ import Home from './components/Home/Home';
 import Header from './components/HyF/Header/Header';
 import Footer from './components/HyF/Footer/Footer';
 import Products from './components/Products/Products';
+import MoreInfo from './components/MoreInfo/MoreInfo';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 
@@ -16,6 +17,7 @@ const App = () => {
                 <Route path="/products" element={<Products />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/more-info" element={<MoreInfo />} />
                 {/* Puedes agregar más rutas aquí */}
             </Routes>
             <Footer />
