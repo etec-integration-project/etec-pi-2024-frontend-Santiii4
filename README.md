@@ -8,15 +8,15 @@ git clone https://github.com/etec-integration-project/etec-pi-2024-frontend-Sant
 cd etec-pi-2024-frontend-Santiii4
 ```
 Paso 2:
-Instalar node:
+Docker:
 ```
-npm install
+docker build -t etec-pi-2024-frontend-santiii4:latest .
 ```
 Paso 3:
 
 Iniciar con:
 ```
-npm start
+docker run -d -p 3000:80 --name etec-pi-2024-frontend-container etec-pi-2024-frontend-santiii4:latest
 ```
 en la consola de visual studio.
 
