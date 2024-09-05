@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Products.css';
-import image24Pallets from '../../assets/24palletesR.jpg';
-import image12Pallets from '../../assets/24palletes.jpg';
 
 const Products = () => {
+    const [products, setProducts] = useState([]);
+
+    // Obtener productos desde el backend
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/products');  // Verifica que esta URL sea correcta
+                if (!response.ok) {
+                    throw new Error('Error al obtener productos');
+                }
+                const data = await response.json();
+                setProducts(data);  // Guardar productos en el estado
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
     // Manejar la adición al carrito
     const addToCart = (productId) => {
-        fetch('/cart/add', {
+        fetch('http://localhost:5000/cart/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: productId, quantity: 1 })
@@ -21,25 +39,26 @@ const Products = () => {
 
     return (
         <div className="products">
-            <h1>Products</h1>
+            <h1>Lista de Productos</h1>
             <div className="product-list">
-                <div className="product-item">
-                    <img src={image24Pallets} alt="24 Pallets" className="product-image" />
-                    <h2>24 Pallets</h2>
-                    <button className="add-to-cart" onClick={() => addToCart(1)}>Add to Cart</button>
-                    {/* El ID 1 es un ejemplo, debería coincidir con el ID del producto en tu base de datos */}
-                </div>
-                <div className="product-item">
-                    <img src={image12Pallets} alt="12 Pallets" className="product-image" />
-                    <h2>12 Pallets</h2>
-                    <button className="add-to-cart" onClick={() => addToCart(2)}>Add to Cart</button>
-                    {/* El ID 2 es un ejemplo, debería coincidir con el ID del producto en tu base de datos */}
-                </div>
+                {products.length > 0 ? (
+                    products.map(product => (
+                        <div className="product-item" key={product.id}>
+                            <img src={product.image} alt={product.name} className="product-image" />
+                            <h2>{product.name}</h2>
+                            <p>Precio: {product.price}</p>
+                            <button className="add-to-cart" onClick={() => addToCart(product.id)}>Agregar al carrito</button>
+                        </div>
+                    ))
+                ) : (
+                    <p>No hay productos disponibles</p>
+                )}
             </div>
         </div>
     );
 };
 
 export default Products;
+
 
 
