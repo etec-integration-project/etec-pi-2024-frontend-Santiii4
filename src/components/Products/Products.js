@@ -37,6 +37,17 @@ const Products = () => {
         .catch(error => console.error('Error al agregar al carrito:', error));
     };
 
+    // Asignar imágenes basadas en el nombre del producto
+    const getProductImage = (productName) => {
+        if (productName === '12 Pallets') {
+            return '/12.jpg';  // Imagen para 12 pallets
+        } else if (productName === '24 Pallets') {
+            return '/24.jpg';  // Imagen para 24 pallets
+        } else {
+            return '/default.jpg';  // Imagen por defecto, puedes agregarla si lo deseas
+        }
+    };
+
     return (
         <div className="products">
             <h1>Lista de Productos</h1>
@@ -44,7 +55,7 @@ const Products = () => {
                 {products.length > 0 ? (
                     products.map(product => (
                         <div className="product-item" key={product.id}>
-                            <img src={product.image} alt={product.name} className="product-image" />
+                            <img src={getProductImage(product.name)} alt={product.name} className="product-image" />
                             <h2>{product.name}</h2>
                             <p>Precio: {product.price}</p>
                             <button className="add-to-cart" onClick={() => addToCart(product.id)}>Agregar al carrito</button>
@@ -59,6 +70,8 @@ const Products = () => {
 };
 
 export default Products;
+
+
 
 
 

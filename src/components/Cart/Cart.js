@@ -5,20 +5,18 @@ const Cart = () => {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [total, setTotal] = useState(0);
+  const [message, setMessage] = useState(''); // Estado para manejar el mensaje de éxito o rechazo
 
   // Obtener productos y carrito
   useEffect(() => {
     const fetchProductsAndCart = async () => {
       try {
-        // Obtener productos desde el backend
         const productsResponse = await axios.get('http://localhost:5000/products');
         setProducts(productsResponse.data);
 
-        // Obtener carrito desde el backend
         const cartResponse = await axios.get('http://localhost:5000/cart');
         setCart(cartResponse.data);
 
-        // Calcular el total
         calculateTotal(cartResponse.data, productsResponse.data);
       } catch (error) {
         console.error('Error al obtener productos o carrito:', error);
@@ -57,7 +55,7 @@ const Cart = () => {
       await axios.put('http://localhost:5000/cart/update', { id: productId, quantity: -1 });
       const updatedCart = cart.map(item =>
         item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
-      ).filter(item => item.quantity > 0); // Eliminar si la cantidad es 0
+      );
       setCart(updatedCart);
       calculateTotal(updatedCart, products);
     } catch (error) {
@@ -65,61 +63,55 @@ const Cart = () => {
     }
   };
 
-  // Eliminar producto
-  const handleRemoveProduct = async (productId) => {
+  // Confirmar la compra
+  const handleConfirmPurchase = async () => {
     try {
-      await axios.delete(`http://localhost:5000/cart/remove/${productId}`);
-      const updatedCart = cart.filter(item => item.id !== productId);
-      setCart(updatedCart);
-      calculateTotal(updatedCart, products);
+      const response = await axios.post('http://localhost:5000/cart/confirm');
+      setMessage(response.data.message); // Mostrar mensaje de éxito
+      setCart([]); // Vaciar carrito
+      setTotal(0); // Reiniciar total
     } catch (error) {
-      console.error('Error eliminando producto:', error);
+      setMessage(error.response ? error.response.data.message : 'Error al realizar la compra'); // Mostrar mensaje de error
     }
   };
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-md-8">
-          <h4 className="mb-3">Carrito de Compras</h4>
-          <ul className="list-group mb-3">
-            {cart.map((item, index) => {
-              const product = products.find(p => p.id === item.id);
-              if (!product) return null; // Si el producto no existe
-              return (
-                <li key={index} className="list-group-item d-flex justify-content-between lh-condensed">
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Carrito de Compras</h2>
+      {message && <p className="text-center" style={{ color: message.includes('Error') ? 'red' : 'green' }}>{message}</p>}
+      {cart.length === 0 ? (
+        <p className="text-center">Tu carrito está vacío</p>
+      ) : (
+        <div>
+          {cart.map(item => {
+            const product = products.find(p => p.id === item.id);
+            return product ? (
+              <div className="card mb-3" key={item.id}>
+                <div className="card-body d-flex justify-content-between align-items-center">
                   <div>
-                    <h6 className="my-0">{product.name}</h6>
-                    <small className="text-muted">{product.description || 'Descripción breve'}</small>
+                    <h5 className="card-title">{product.name}</h5>
+                    <p className="card-text">Cantidad: {item.quantity} x ${product.price}</p>
                   </div>
-                  <span className="text-muted">${product.price}</span>
                   <div>
-                    <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => handleRemoveQuantity(item.id)}>-</button>
-                    <span className="mx-2">{item.quantity}</span>
-                    <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => handleAddQuantity(item.id)}>+</button>
+                    <button className="btn btn-primary btn-sm me-2" onClick={() => handleAddQuantity(item.id)}>+</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveQuantity(item.id)}>-</button>
                   </div>
-                  <button type="button" className="btn btn-sm btn-outline-danger ml-3" onClick={() => handleRemoveProduct(item.id)}>Eliminar</button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="col-md-4">
-          <div className="card mb-4">
-            <div className="card-header">
-              <h4 className="mb-0">Resumen del Pedido</h4>
-            </div>
-            <div className="card-body">
-              <h5>Total: ${total.toFixed(2)}</h5>
-              <button type="button" className="btn btn-primary btn-block">Proceder al Pago</button>
-            </div>
+                </div>
+              </div>
+            ) : null;
+          })}
+          <div className="text-end">
+            <h4>Total: ${total.toFixed(2)}</h4>
+            <button className="btn btn-success mt-3" onClick={handleConfirmPurchase}>Confirmar compra</button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
 export default Cart;
+
+
 
 
