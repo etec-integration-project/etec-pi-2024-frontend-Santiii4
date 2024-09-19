@@ -11,6 +11,10 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        // Verificar que los datos se estén enviando correctamente
+        console.log('Datos enviados:', { name, email, password });
+
         try {
             const response = await axios.post('http://localhost:5000/users/register', {
                 name,
@@ -21,7 +25,9 @@ const Register = () => {
             localStorage.setItem('token', response.data.token);
             navigate('/home'); // Redirige después del registro exitoso
         } catch (err) {
-            setError('Registro fallido. Inténtalo de nuevo.');
+            // Verificar el mensaje de error que devuelve el backend
+            console.error('Error en el registro:', err.response.data);
+            setError(err.response.data.msg || 'Registro fallido. Inténtalo de nuevo.');
         }
     };
 
@@ -77,6 +83,7 @@ const Register = () => {
 };
 
 export default Register;
+
 
 
 
