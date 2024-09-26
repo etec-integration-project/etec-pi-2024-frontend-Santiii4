@@ -12,11 +12,8 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // Verificar que los datos se estén enviando correctamente
-        console.log('Datos enviados:', { name, email, password });
-
         try {
-            const response = await axios.post('http://localhost:5000/users/register', {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/register`, {
                 name,
                 email,
                 password
@@ -25,8 +22,6 @@ const Register = () => {
             localStorage.setItem('token', response.data.token);
             navigate('/home'); // Redirige después del registro exitoso
         } catch (err) {
-            // Verificar el mensaje de error que devuelve el backend
-            console.error('Error en el registro:', err.response.data);
             setError(err.response.data.msg || 'Registro fallido. Inténtalo de nuevo.');
         }
     };
@@ -34,7 +29,7 @@ const Register = () => {
     return (
         <div className="container mt-5" style={{ maxWidth: '400px' }}>
             <h2 className="text-center mb-4">Register</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p style={{color: 'red'}}>{error}</p>}
             <form onSubmit={handleRegister}>
                 <div className="form-group mb-3">
                     <label htmlFor="name">Nombre</label>
@@ -83,6 +78,7 @@ const Register = () => {
 };
 
 export default Register;
+
 
 
 

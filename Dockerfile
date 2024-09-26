@@ -27,7 +27,7 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/server.js /app/server.js
 
 # 10. Exponemos el puerto en el que Express servirá la aplicación
-EXPOSE 5000
+EXPOSE 3000
 
 # 11. Comando por defecto para iniciar el servidor Express
 CMD ["node", "/app/server.js"]
