@@ -8,7 +8,7 @@ const Products = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/products`);  // Usar variable de entorno
+                const response = await fetch(`http://backend:8000/products`);  // Usar variable de entorno
                 if (!response.ok) {
                     throw new Error('Error al obtener productos');
                 }
@@ -24,7 +24,7 @@ const Products = () => {
 
     // Manejar la adición al carrito
     const addToCart = (productId) => {
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/cart/add`, {
+        fetch(`http://backend:8000/cart/add`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: productId, quantity: 1 })

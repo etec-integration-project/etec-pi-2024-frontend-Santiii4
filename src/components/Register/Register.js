@@ -13,7 +13,7 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/register`, {
+            const response = await axios.post(`http://backend:8000/users/register`, {
                 name,
                 email,
                 password

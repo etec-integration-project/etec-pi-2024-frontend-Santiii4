@@ -11,10 +11,10 @@ const Cart = () => {
   useEffect(() => {
     const fetchProductsAndCart = async () => {
       try {
-        const productsResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/products`);
+        const productsResponse = await axios.get(`http://backend:8000/products`);
         setProducts(productsResponse.data);
 
-        const cartResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/cart`);
+        const cartResponse = await axios.get(`http://backend:8000/cart`);
         setCart(cartResponse.data);
 
         calculateTotal(cartResponse.data, productsResponse.data);
@@ -38,7 +38,7 @@ const Cart = () => {
   // Añadir cantidad
   const handleAddQuantity = async (productId) => {
     try {
-      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/cart/update`, { id: productId, quantity: 1 });
+      await axios.put(`http://backend:8000/cart/update`, { id: productId, quantity: 1 });
       const updatedCart = cart.map(item =>
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
       );
@@ -52,7 +52,7 @@ const Cart = () => {
   // Reducir cantidad
   const handleRemoveQuantity = async (productId) => {
     try {
-      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/cart/update`, { id: productId, quantity: -1 });
+      await axios.put(`http://backend:8000/cart/update`, { id: productId, quantity: -1 });
       const updatedCart = cart.map(item =>
         item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
       );
@@ -66,7 +66,7 @@ const Cart = () => {
   // Confirmar la compra
   const handleConfirmPurchase = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/cart/confirm`);
+      const response = await axios.post(`http://backend:8000/cart/confirm`);
       setMessage(response.data.message); // Mostrar mensaje de éxito
       setCart([]); // Vaciar carrito
       setTotal(0); // Reiniciar total
