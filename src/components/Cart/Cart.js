@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../..';
 
 const Cart = () => {
   const [products, setProducts] = useState([]);
@@ -11,10 +12,10 @@ const Cart = () => {
   useEffect(() => {
     const fetchProductsAndCart = async () => {
       try {
-        const productsResponse = await axios.get(`http://localhost:8000/products`);
+        const productsResponse = await axios.get(`${API_URL}/products`);
         setProducts(productsResponse.data);
 
-        const cartResponse = await axios.get(`http://localhost:8000/cart`);
+        const cartResponse = await axios.get(`${API_URL}/cart`);
         setCart(cartResponse.data);
 
         calculateTotal(cartResponse.data, productsResponse.data);
@@ -38,7 +39,7 @@ const Cart = () => {
   // Añadir cantidad
   const handleAddQuantity = async (productId) => {
     try {
-      await axios.put(`http://localhost:8000/cart/update`, { id: productId, quantity: 1 });
+      await axios.put(`${API_URL}/cart/update`, { id: productId, quantity: 1 });
       const updatedCart = cart.map(item =>
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
       );
@@ -52,7 +53,7 @@ const Cart = () => {
   // Reducir cantidad
   const handleRemoveQuantity = async (productId) => {
     try {
-      await axios.put(`http://localhost:8000/cart/update`, { id: productId, quantity: -1 });
+      await axios.put(`${API_URL}/cart/update`, { id: productId, quantity: -1 });
       const updatedCart = cart.map(item =>
         item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
       );
@@ -66,7 +67,7 @@ const Cart = () => {
   // Confirmar la compra
   const handleConfirmPurchase = async () => {
     try {
-      const response = await axios.post(`http://localhost:8000/cart/confirm`);
+      const response = await axios.post(`${API_URL}/cart/confirm`);
       setMessage(response.data.message); // Mostrar mensaje de éxito
       setCart([]); // Vaciar carrito
       setTotal(0); // Reiniciar total
