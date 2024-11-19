@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,23 +13,25 @@ const Register = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/register`, {
+            const response = await axios.post(`http://localhost:8000/users/register`, {
                 name,
                 email,
                 password
             });
+
             // Suponiendo que la respuesta contiene un token
             localStorage.setItem('token', response.data.token);
             navigate('/home'); // Redirige después del registro exitoso
         } catch (err) {
-            setError(err.response.data.msg || 'Registro fallido. Inténtalo de nuevo.');
+            // Manejo de errores más robusto
+            setError(err.response?.data?.msg || 'Registro fallido. Inténtalo de nuevo.');
         }
     };
 
     return (
         <div className="container mt-5" style={{ maxWidth: '400px' }}>
             <h2 className="text-center mb-4">Register</h2>
-            {error && <p style={{color: 'red'}}>{error}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleRegister}>
                 <div className="form-group mb-3">
                     <label htmlFor="name">Nombre</label>
@@ -78,9 +80,3 @@ const Register = () => {
 };
 
 export default Register;
-
-
-
-
-
-
