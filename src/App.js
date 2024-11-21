@@ -11,18 +11,6 @@ import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 
 const App = () => {
-    useEffect(() => {
-        // Ejemplo de petición a la API al montar el componente
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('/api/some-endpoint');
-                console.log('Datos obtenidos:', response.data);
-            } catch (error) {
-                console.error('Error al obtener datos:', error);
-            }
-        };
-        fetchData();
-    }, []);
 
     return (
         <div>

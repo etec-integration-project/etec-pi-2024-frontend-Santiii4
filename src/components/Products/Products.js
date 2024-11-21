@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Products.css';
-import { API_URL } from '../..';
+import { API_URL } from '../../index';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
