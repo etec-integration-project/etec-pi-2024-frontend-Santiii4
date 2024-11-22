@@ -5,10 +5,11 @@ import Home from './components/Home/Home';
 import Header from './components/HyF/Header/Header';
 import Footer from './components/HyF/Footer/Footer';
 import Products from './components/Products/Products';
-import MoreInfo from './components/MoreInfo/MoreInfo';
+import Contact from './components/Contact/Contact';
 import Cart from './components/Cart/Cart';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
+import Opinion from './components/Opinion/Opinion';
 
 const App = () => {
 
@@ -21,7 +22,8 @@ const App = () => {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/more-info" element={<MoreInfo />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/opinion" element={<Opinion />} />
                 {/* Puedes agregar más rutas aquí */}
             </Routes>
             <Footer />
