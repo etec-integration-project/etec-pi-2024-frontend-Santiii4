@@ -1,9 +1,8 @@
-import { React, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../index';
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -12,19 +11,27 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${API_URL}/users/login`, {
-                email,
-                password
+            const response = await fetch(`${API_URL}/users/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email, password }),
             });
-            // Suponiendo que la respuesta contiene un token
-            localStorage.setItem('token', response.data.token);
-            navigate('/home'); // Redirige después de login exitoso
+
+            if (response.ok) {
+                setIsAuthenticated(true);
+                alert('Inicio de sesión exitoso');
+                navigate('/home');
+            } else {
+                setError('Email o contraseña incorrecta');
+            }
         } catch (err) {
-            setError('Email o contraseña incorrecta');
+            setError('Error al iniciar sesión');
         }
     };
 
-    // Función para redirigir al formulario de registro si el usuario no está registrado
     const handleRegisterRedirect = () => {
         navigate('/register'); // Redirige a la página de registro
     };
@@ -32,7 +39,7 @@ const Login = () => {
     return (
         <div className="container mt-5" style={{ maxWidth: '400px' }}>
             <h2 className="text-center mb-4">Login</h2>
-            {error && <p style={{color: 'red'}}>{error}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleLogin}>
                 <div className="form-group mb-3">
                     <label htmlFor="exampleInputEmail1">Email address</label>
@@ -60,15 +67,20 @@ const Login = () => {
                 </div>
                 <button type="submit" className="btn btn-primary w-100">Submit</button>
             </form>
-
             <p className="text-center mt-3">
-                ¿No tienes una cuenta? <button className="btn btn-link p-0" onClick={handleRegisterRedirect}>Regístrate aquí</button>
+                ¿No tienes una cuenta?{' '}
+                <button className="btn btn-link p-0" onClick={handleRegisterRedirect}>
+                    Regístrate aquí
+                </button>
             </p>
         </div>
     );
 };
 
 export default Login;
+
+
+
 
 
 

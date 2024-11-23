@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../..';
 
@@ -12,25 +11,32 @@ const Cart = () => {
   useEffect(() => {
     const fetchProductsAndCart = async () => {
       try {
-        const productsResponse = await axios.get(`${API_URL}/products`);
-        setProducts(productsResponse.data);
+        const productsResponse = await fetch(`${API_URL}/products`);
+        const cartResponse = await fetch(`${API_URL}/cart`, { credentials: 'include' });
 
-        const cartResponse = await axios.get(`${API_URL}/cart`);
-        setCart(cartResponse.data);
+        if (!productsResponse.ok || !cartResponse.ok) {
+          throw new Error('Error al obtener productos o carrito');
+        }
 
-        calculateTotal(cartResponse.data, productsResponse.data);
+        const productsData = await productsResponse.json();
+        const cartData = await cartResponse.json();
+
+        setProducts(productsData);
+        setCart(cartData);
+
+        calculateTotal(cartData, productsData);
       } catch (error) {
         console.error('Error al obtener productos o carrito:', error);
       }
     };
-    
+
     fetchProductsAndCart();
   }, []);
 
   // Calcular el total
   const calculateTotal = (cartItems, productList) => {
     const totalPrice = cartItems.reduce((sum, item) => {
-      const product = productList.find(p => p.id === item.id);
+      const product = productList.find(p => p.id === item.product_id);
       return product ? sum + (product.price * item.quantity) : sum;
     }, 0);
     setTotal(totalPrice);
@@ -39,9 +45,19 @@ const Cart = () => {
   // Añadir cantidad
   const handleAddQuantity = async (productId) => {
     try {
-      await axios.put(`${API_URL}/cart/update`, { id: productId, quantity: 1 });
+      const response = await fetch(`${API_URL}/cart/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: productId, quantity: 1 }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error añadiendo cantidad');
+      }
+
       const updatedCart = cart.map(item =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.product_id === productId ? { ...item, quantity: item.quantity + 1 } : item
       );
       setCart(updatedCart);
       calculateTotal(updatedCart, products);
@@ -53,9 +69,19 @@ const Cart = () => {
   // Reducir cantidad
   const handleRemoveQuantity = async (productId) => {
     try {
-      await axios.put(`${API_URL}/cart/update`, { id: productId, quantity: -1 });
+      const response = await fetch(`${API_URL}/cart/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: productId, quantity: -1 }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error reduciendo cantidad');
+      }
+
       const updatedCart = cart.map(item =>
-        item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+        item.product_id === productId ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
       );
       setCart(updatedCart);
       calculateTotal(updatedCart, products);
@@ -67,12 +93,23 @@ const Cart = () => {
   // Confirmar la compra
   const handleConfirmPurchase = async () => {
     try {
-      const response = await axios.post(`${API_URL}/cart/confirm`);
-      setMessage(response.data.message); // Mostrar mensaje de éxito
-      setCart([]); // Vaciar carrito
-      setTotal(0); // Reiniciar total
+      const response = await fetch(`${API_URL}/cart/confirm`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMessage(errorData.message || 'Error al realizar la compra');
+        return;
+      }
+
+      setMessage('Compra realizada con éxito');
+      setCart([]);
+      setTotal(0);
     } catch (error) {
-      setMessage(error.response ? error.response.data.message : 'Error al realizar la compra'); // Mostrar mensaje de error
+      setMessage('Error al realizar la compra');
+      console.error(error);
     }
   };
 
@@ -85,17 +122,17 @@ const Cart = () => {
       ) : (
         <div>
           {cart.map(item => {
-            const product = products.find(p => p.id === item.id);
+            const product = products.find(p => p.id === item.product_id);
             return product ? (
-              <div className="card mb-3" key={item.id}>
+              <div className="card mb-3" key={item.product_id}>
                 <div className="card-body d-flex justify-content-between align-items-center">
                   <div>
                     <h5 className="card-title">{product.name}</h5>
                     <p className="card-text">Cantidad: {item.quantity} x ${product.price}</p>
                   </div>
                   <div>
-                    <button className="btn btn-primary btn-sm me-2" onClick={() => handleAddQuantity(item.id)}>+</button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveQuantity(item.id)}>-</button>
+                    <button className="btn btn-primary btn-sm me-2" onClick={() => handleAddQuantity(item.product_id)}>+</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveQuantity(item.product_id)}>-</button>
                   </div>
                 </div>
               </div>
@@ -112,6 +149,7 @@ const Cart = () => {
 };
 
 export default Cart;
+
 
 
 
