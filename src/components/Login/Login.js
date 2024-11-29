@@ -21,7 +21,7 @@ const Login = ({ setIsAuthenticated }) => {
             });
 
             if (response.ok) {
-                const data = await response.json(); // Supongamos que el token viene en la respuesta
+                const data = await response.json(); // Suponemos que el token viene en la respuesta
                 localStorage.setItem('authToken', data.token); // Guarda el token en localStorage
                 setIsAuthenticated(true); // Actualiza el estado de autenticación
                 alert('Inicio de sesión exitoso');
@@ -36,6 +36,20 @@ const Login = ({ setIsAuthenticated }) => {
 
     const handleRegisterRedirect = () => {
         navigate('/register'); // Redirige a la página de registro
+    };
+
+    const handleLogout = () => {
+        // Elimina el token JWT de localStorage
+        localStorage.removeItem('authToken');
+        
+        // Borra las cookies asociadas con el login
+        document.cookie = 'auth-token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; // Borra la cookie del carrito (si existe)
+
+        // Actualiza el estado de autenticación
+        setIsAuthenticated(false);
+
+        // Redirige al login
+        navigate('/login');
     };
 
     return (
@@ -75,11 +89,16 @@ const Login = ({ setIsAuthenticated }) => {
                     Regístrate aquí
                 </button>
             </p>
+            {/* Botón de Logout */}
+            <button onClick={handleLogout} className="btn btn-danger mt-3 w-100">
+                Logout
+            </button>
         </div>
     );
 };
 
 export default Login;
+
 
 
 
