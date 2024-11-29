@@ -68,14 +68,15 @@ const Cart = () => {
     }
   };
 
-  // Reducir cantidad
+  // Reducir cantidad o eliminar producto
   const handleRemoveQuantity = async (productId) => {
     try {
-      const response = await fetch(`${API_URL}/cart/add`, {
+      // Cambiar la ruta de la solicitud a /cart/remove
+      const response = await fetch(`${API_URL}/cart/remove`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ id: productId, quantity: -1 }),
+        body: JSON.stringify({ id: productId, quantity: 1 }), // Reducir cantidad
       });
 
       if (!response.ok) {
@@ -92,80 +93,75 @@ const Cart = () => {
     }
   };
 
-  // Verificar si el usuario está logueado antes de confirmar la compra
-  const handleConfirmPurchase = async () => {
-    const token = localStorage.getItem('authToken'); // Suponiendo que el token está guardado en localStorage
+  // Eliminar producto del carrito
+  const handleRemoveProduct = async (productId) => {
+    try {
+      const response = await fetch(`${API_URL}/cart/remove`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: productId, quantity: 0 }), // Eliminar producto
+      });
 
-    if (!token) {
-      navigate('/login');
-      return;
+      if (!response.ok) {
+        throw new Error('Error eliminando producto');
+      }
+
+      // Filtrar el producto eliminado del carrito
+      const updatedCart = cart.filter(item => item.product_id !== productId);
+      setCart(updatedCart);
+      calculateTotal(updatedCart, products);
+    } catch (error) {
+      console.error('Error eliminando producto:', error);
     }
+  };
 
+  // Confirmar compra
+  const handleConfirmPurchase = async () => {
     try {
       const response = await fetch(`${API_URL}/cart/confirm`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }, // Enviar el token en el encabezado
         credentials: 'include',
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        setMessage(errorData.message || 'Error al realizar la compra');
-        return;
+        throw new Error('Error al confirmar la compra');
       }
 
-      setMessage('Compra realizada con éxito');
+      const result = await response.json();
+      setMessage(result.message);
       setCart([]);
-      setTotal(0);
     } catch (error) {
-      setMessage('Error al realizar la compra');
-      console.error('Error en la compra:', error);
+      console.error('Error confirmando la compra:', error);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4">Carrito de Compras</h2>
-      {message && <p className="text-center" style={{ color: message.includes('Error') ? 'red' : 'green' }}>{message}</p>}
-      {cart.length === 0 ? (
-        <p className="text-center">Tu carrito está vacío</p>
-      ) : (
-        <div>
-          {cart.map(item => {
-            const product = products.find(p => p.id === item.product_id);
-            return product ? (
-              <div className="card mb-3" key={item.product_id}>
-                <div className="card-body d-flex justify-content-between align-items-center">
-                  <div>
-                    <h5 className="card-title">{product.name}</h5>
-                    <p className="card-text">Cantidad: {item.quantity} x ${product.price}</p>
-                  </div>
-                  <div>
-                    <button className="btn btn-primary btn-sm me-2" onClick={() => handleAddQuantity(item.product_id)}>+</button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleRemoveQuantity(item.product_id)}>-</button>
-                  </div>
-                </div>
-              </div>
-            ) : null;
-          })}
-          <div className="text-end">
-            <h4>Total: ${total.toFixed(2)}</h4>
-            <button className="btn btn-success mt-3" onClick={handleConfirmPurchase}>Confirmar compra</button>
-          </div>
-        </div>
-      )}
+    <div>
+      <h1>Carrito de Compras</h1>
+      {message && <div>{message}</div>}
+      <div>
+        {cart.length === 0 ? (
+          <p>El carrito está vacío</p>
+        ) : (
+          cart.map(item => (
+            <div key={item.product_id}>
+              <h3>{products.find(p => p.id === item.product_id)?.name}</h3>
+              <p>Precio: ${products.find(p => p.id === item.product_id)?.price}</p>
+              <p>Cantidad: {item.quantity}</p>
+              <button onClick={() => handleRemoveQuantity(item.product_id)}>-</button>
+              <button onClick={() => handleAddQuantity(item.product_id)}>+</button>
+              <button onClick={() => handleRemoveProduct(item.product_id)}>Eliminar</button> {/* Eliminar producto */}
+            </div>
+          ))
+        )}
+      </div>
+      <div>Total: ${total}</div>
+      <button onClick={handleConfirmPurchase}>Confirmar Compra</button>
     </div>
   );
 };
 
 export default Cart;
-
-
-
-
-
-
-
-
 
 
