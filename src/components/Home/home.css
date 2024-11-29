@@ -1,0 +1,41 @@
+body {
+    background: url('https://images.freeimages.com/images/large-previews/8e6/trucking-in-snow-1357665.jpg') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+.home {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Lato', sans-serif;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.column {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.main-content .logo {
+    max-height: 300px; /* Ajustar según sea necesario */
+    width: auto;
+}
+
+
+
+
+
+
+
+
